@@ -1,0 +1,70 @@
+{
+    "parser": "babel-eslint",
+    "extends": "airbnb",
+    "env": {
+        "browser": true
+    },
+    "rules": {
+        "prefer-arrow-callback": "off",
+        "linebreak-style": [
+            "error",
+            "windows"
+        ],
+        "no-use-before-define": [
+            "error",
+            {
+                "functions": false,
+                "classes": true
+            }
+        ],
+        "space-before-blocks": "off",
+        "indent": [
+            "error",
+            4,
+            {
+                "ignoredNodes": [
+                    "JSXElement *"
+                ],
+                "SwitchCase": 1
+            }
+        ],
+        "import/first": "off",
+        "prefer-destructuring": "off",
+        "class-methods-use-this": "off",
+        "no-trailing-spaces": "off",
+        "object-shorthand": "off",
+        "max-len": "off",
+        "padded-blocks": "off",
+        "object-curly-spacing": "off",
+        "no-param-reassign": "off",
+        "eqeqeq": "off",
+        "no-plusplus": "off",
+        "prefer-template": "off",
+        "arrow-body-style": "off",
+        "no-restricted-syntax": "off",
+        "no-unused-expressions": "warn",
+        "spaced-comment": "off",
+        "guard-for-in": "off",
+        "generator-star-spacing": "off",
+        "import/no-extraneous-dependencies": "off",
+        "jsx-a11y/no-static-element-interactions": "off",
+        "jsx-a11y/label-has-for": "off",
+        "react/prop-types": "off",
+        "react/no-danger": "off",
+        "react/no-unused-prop-types": "off",
+        "react/require-extension": "off",
+        "react/forbid-prop-types": "off",
+        "react/react-in-jsx-scope": "off",
+        "react/jsx-space-before-closing": "off",
+        "react/jsx-indent-props": "off",
+        "react/jsx-first-prop-new-line": "off",
+        "react/jsx-closing-bracket-location": "off",
+        "react/jsx-filename-extension": "off",
+        "react/jsx-tag-spacing": "off",
+        "react/jsx-indent": [
+            "warn",
+            4
+        ],
+        "jsx-a11y/img-has-alt": "off"
+    }
+}
