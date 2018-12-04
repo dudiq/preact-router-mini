@@ -1,0 +1,24 @@
+{
+  "name": "jr-preact-router-mini",
+  "version": "0.0.1",
+  "description": "just other implementation of router for sinple page navigation",
+  "main": "src/index.js",
+  "dependencies": {
+    "jr-callbacks": "^0.0.1",
+    "jr-debounce": "^0.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dudiq/preact-router-mini.git"
+  },
+  "keywords": [
+    "preact",
+    "router"
+  ],
+  "author": "'dudiq'",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dudiq/preact-router-mini/issues"
+  },
+  "homepage": "https://github.com/dudiq/preact-router-mini#readme"
+}
