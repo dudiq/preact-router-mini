@@ -1,6 +1,6 @@
 {
   "name": "jr-preact-router-mini",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "just other implementation of router for sinple page navigation",
   "jsnext:main": "src/index.js",
   "dependencies": {
