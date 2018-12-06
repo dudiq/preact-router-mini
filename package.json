@@ -1,14 +1,14 @@
 {
   "name": "jr-preact-router-mini",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "just other implementation of router for sinple page navigation",
   "main": "dist/index.js",
   "scripts": {
     "build": "babel src -d dist"
   },
   "dependencies": {
-    "jr-callbacks": "^0.0.1",
-    "jr-debounce": "^0.0.1",
+    "jr-callbacks": "^0.0.2",
+    "jr-debounce": "^0.0.2",
     "path-to-regexp": "^2.4.0",
     "preact": "^8.3.1"
   },
