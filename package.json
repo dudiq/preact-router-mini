@@ -1,7 +1,7 @@
 {
   "name": "jr-preact-router-mini",
-  "version": "0.0.4",
-  "description": "just other implementation of router for sinple page navigation",
+  "version": "0.1.0",
+  "description": "just other implementation of router for single page navigation",
   "main": "dist/index.js",
   "scripts": {
     "build": "babel src -d dist"
@@ -9,17 +9,15 @@
   "dependencies": {
     "jr-callbacks": "^0.0.2",
     "jr-debounce": "^0.0.2",
-    "path-to-regexp": "^2.4.0",
-    "preact": "^8.3.1"
+    "preact": "^8.4.2"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.3",
-    "babel-preset-env": "^1.7.0",
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.4.0",
+    "@babel/plugin-proposal-class-properties": "^7.4.0",
+    "@babel/plugin-transform-react-jsx": "^7.3.0",
+    "@babel/preset-env": "^7.4.2",
     "babel-eslint": "^10.0.1",
-    "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-plugin-transform-react-jsx": "^6.24.1",
     "cross-env": "^5.2.0"
   },
   "repository": {

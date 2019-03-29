@@ -1,8 +1,8 @@
-import pathToRegexp from 'path-to-regexp';
 import callbacks from 'jr-callbacks';
 import debounce from 'jr-debounce';
 import HistoryApiClass from './history-api';
 import utils from './utils';
+import pathToRegexp from './pathToRegexp';
 
 const deb = debounce(100);
 
@@ -15,46 +15,72 @@ const historyApi = new HistoryApiClass();
 const routesCbs = [];
 const currKeys = {};
 let currentPath = historyApi.getPath();
+const notFoundCheck = {
+    haveValidRoutes: false,
+    havePassedRoutes: false,
+};
 
 function checkNotFound() {
     deb.stop();
-    let haveRes = false;
+    notFoundCheck.haveValidRoutes = false;
+    notFoundCheck.havePassedRoutes = false;
     for (let i = 0, l = routesCbs.length; i < l; i++) {
         const item = routesCbs[i];
         if (item.isValid) {
-            haveRes = true;
+            notFoundCheck.haveValidRoutes = true;
+            if (!item.opt.skipNotFound) {
+                notFoundCheck.havePassedRoutes = true;
+            }
         }
     }
-    notFoundBind(!haveRes);
+    notFoundBind(notFoundCheck);
 }
 
 function onAdd() {
     deb(checkNotFound);
 }
 
+function IsValid(re, path) {
+    return re.test(path);
+}
+
 const router = {
     startRouting: function () {
         historyApi.startHistory();
+        utils.fillKeys(currentPath, currKeys);
     },
 
     getKey: function (key) {
         return currKeys[key];
+    },
+    getKeyFromPath: function (path, key) {
+        const keysGetter = new pathToRegexp(path);
+        keysGetter.exec(currentPath);
+        let res;
+        const params = keysGetter.params;
+        if (Array.isArray(key)) {
+            res = {};
+            key.forEach((pKey) => {
+                res[pKey] = params[pKey];
+            });
+        } else {
+            res = params[key];
+        }
+        return res;
     },
     getPath: function () {
         return currentPath;
     },
     length: historyApi.length,
     onChanged,
-    onRoute: function (bindPath, onShow, onHide, ctx) {
-        const re = pathToRegexp(bindPath);
+    onRoute: function (bindPath, onToggle, opt = {}) {
+        const pte = new pathToRegexp(bindPath, true);
         const item = {
             path: bindPath,
-            ctx,
-            onShow,
-            onHide,
-            re: re,
-            isValid: re.test(currentPath),
-            idxToKey: utils.getKeysIndexes(bindPath),
+            onToggle: onToggle,
+            opt,
+            pte: pte,
+            isValid: IsValid(pte, currentPath),
         };
         routesCbs.push(item);
         item.isValid && utils.onShowRe(currentPath, currKeys, item);
@@ -62,9 +88,9 @@ const router = {
         onAdd();
     },
 
-    offRoute: function (ctx) {
+    offRoute: function (onToggle) {
         for (let i = routesCbs.length - 1; i >= 0; i--) {
-            if (routesCbs[i].ctx == ctx) {
+            if (routesCbs[i].onToggle == onToggle) {
                 routesCbs.splice(i, 1);
             }
         }
@@ -83,7 +109,9 @@ const router = {
 
     replaceState: function (path) {
         oneBackCbs.clean();
-        historyApi.replaceState(path);
+        if (path != currentPath) {
+            historyApi.replaceState(path);
+        }
     },
 
     pushState: function (path) {
@@ -105,11 +133,11 @@ historyApi.on(function onPathChanged(location) {
     onChanged(currentPath);
     utils.fillKeys(currentPath, currKeys);
     routesCbs.forEach((item) => {
-        item.isValid = item.re.test(currentPath);
+        item.isValid = IsValid(item.pte, currentPath);
         if (item.isValid) {
             utils.onShowRe(currentPath, currKeys, item);
         } else {
-            item.onHide();
+            item.onToggle(false);
         }
     });
 

@@ -51,7 +51,7 @@ function createStatePath(path) {
 function parseLocation() {
     const path = this.getPath();
     const callbacks = this.callbacks;
-    for (let i = 0, l = callbacks.length; i < l; i = i + 2) {
+    for (let i = 0, l = callbacks.length; i < l; i++) {
         callbacks[i](path);
     }
 }

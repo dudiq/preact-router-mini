@@ -1,4 +1,3 @@
-
 const utils = {
     fillKeys: function (location, keyList) {
         const levels = location.split('/');
@@ -29,32 +28,8 @@ const utils = {
         return ret;
     },
     onShowRe: function (path, keyList, item) {
-
-        const vals = item.re.exec(path);
-        const idxToKey = item.idxToKey;
-
-        for (let key in idxToKey) {
-            const idx = idxToKey[key];
-            keyList[key] = vals[idx];
-        }
-
-        item.onShow();
-    },
-    getKeysIndexes: function (path) {
-        const levels = path.split('/');
-        const keys = {};
-        let idx = 1;
-        levels.forEach((item) => {
-            if (item && item[0] == ':') {
-                const first = item.substr(1);
-                const key = (first[first.length - 1] == '?')
-                    ? first.substr(0, first.length - 1)
-                    : first;
-                keys[key] = idx;
-                idx++;
-            }
-        });
-        return keys;
+        item.pte.exec(path, keyList);
+        item.onToggle(true);
     },
 };
 

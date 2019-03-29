@@ -1,138 +1,158 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
+exports.default = void 0;
 
-var _pathToRegexp = require('path-to-regexp');
+var _jrCallbacks = _interopRequireDefault(require("jr-callbacks"));
 
-var _pathToRegexp2 = _interopRequireDefault(_pathToRegexp);
+var _jrDebounce = _interopRequireDefault(require("jr-debounce"));
 
-var _jrCallbacks = require('jr-callbacks');
+var _historyApi = _interopRequireDefault(require("./history-api"));
 
-var _jrCallbacks2 = _interopRequireDefault(_jrCallbacks);
+var _utils = _interopRequireDefault(require("./utils"));
 
-var _jrDebounce = require('jr-debounce');
-
-var _jrDebounce2 = _interopRequireDefault(_jrDebounce);
-
-var _historyApi = require('./history-api');
-
-var _historyApi2 = _interopRequireDefault(_historyApi);
-
-var _utils = require('./utils');
-
-var _utils2 = _interopRequireDefault(_utils);
+var _pathToRegexp = _interopRequireDefault(require("./pathToRegexp"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var deb = (0, _jrDebounce2.default)(100);
-
-var notFoundBind = (0, _jrCallbacks2.default)();
-var oneBackCbs = (0, _jrCallbacks2.default)();
-var onChanged = (0, _jrCallbacks2.default)();
-
-var historyApi = new _historyApi2.default();
-
+var deb = (0, _jrDebounce.default)(100);
+var notFoundBind = (0, _jrCallbacks.default)();
+var oneBackCbs = (0, _jrCallbacks.default)();
+var onChanged = (0, _jrCallbacks.default)();
+var historyApi = new _historyApi.default();
 var routesCbs = [];
 var currKeys = {};
 var currentPath = historyApi.getPath();
+var notFoundCheck = {
+  haveValidRoutes: false,
+  havePassedRoutes: false
+};
 
 function checkNotFound() {
-    deb.stop();
-    var haveRes = false;
-    for (var i = 0, l = routesCbs.length; i < l; i++) {
-        var item = routesCbs[i];
-        if (item.isValid) {
-            haveRes = true;
-        }
+  deb.stop();
+  notFoundCheck.haveValidRoutes = false;
+  notFoundCheck.havePassedRoutes = false;
+
+  for (var i = 0, l = routesCbs.length; i < l; i++) {
+    var item = routesCbs[i];
+
+    if (item.isValid) {
+      notFoundCheck.haveValidRoutes = true;
+
+      if (!item.opt.skipNotFound) {
+        notFoundCheck.havePassedRoutes = true;
+      }
     }
-    notFoundBind(!haveRes);
+  }
+
+  notFoundBind(notFoundCheck);
 }
 
 function onAdd() {
-    deb(checkNotFound);
+  deb(checkNotFound);
+}
+
+function IsValid(re, path) {
+  return re.test(path);
 }
 
 var router = {
-    startRouting: function startRouting() {
-        historyApi.startHistory();
-    },
+  startRouting: function startRouting() {
+    historyApi.startHistory();
 
-    getKey: function getKey(key) {
-        return currKeys[key];
-    },
-    getPath: function getPath() {
-        return currentPath;
-    },
-    length: historyApi.length,
-    onChanged: onChanged,
-    onRoute: function onRoute(bindPath, onShow, onHide, ctx) {
-        var re = (0, _pathToRegexp2.default)(bindPath);
-        var item = {
-            path: bindPath,
-            ctx: ctx,
-            onShow: onShow,
-            onHide: onHide,
-            re: re,
-            isValid: re.test(currentPath),
-            idxToKey: _utils2.default.getKeysIndexes(bindPath)
-        };
-        routesCbs.push(item);
-        item.isValid && _utils2.default.onShowRe(currentPath, currKeys, item);
+    _utils.default.fillKeys(currentPath, currKeys);
+  },
+  getKey: function getKey(key) {
+    return currKeys[key];
+  },
+  getKeyFromPath: function getKeyFromPath(path, key) {
+    var keysGetter = new _pathToRegexp.default(path);
+    keysGetter.exec(currentPath);
+    var res;
+    var params = keysGetter.params;
 
-        onAdd();
-    },
-
-    offRoute: function offRoute(ctx) {
-        for (var i = routesCbs.length - 1; i >= 0; i--) {
-            if (routesCbs[i].ctx == ctx) {
-                routesCbs.splice(i, 1);
-            }
-        }
-    },
-
-    oneBack: function oneBack(cb) {
-        oneBackCbs.clean();
-        oneBackCbs.on(cb);
-    },
-    offBack: function offBack(cb) {
-        cb ? oneBackCbs.off(cb) : oneBackCbs.clean();
-    },
-    notFoundBind: notFoundBind,
-
-    replaceState: function replaceState(path) {
-        oneBackCbs.clean();
-        historyApi.replaceState(path);
-    },
-
-    pushState: function pushState(path) {
-        oneBackCbs.clean();
-        historyApi.pushState(path);
+    if (Array.isArray(key)) {
+      res = {};
+      key.forEach(function (pKey) {
+        res[pKey] = params[pKey];
+      });
+    } else {
+      res = params[key];
     }
+
+    return res;
+  },
+  getPath: function getPath() {
+    return currentPath;
+  },
+  length: historyApi.length,
+  onChanged: onChanged,
+  onRoute: function onRoute(bindPath, onToggle) {
+    var opt = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    var pte = new _pathToRegexp.default(bindPath, true);
+    var item = {
+      path: bindPath,
+      onToggle: onToggle,
+      opt: opt,
+      pte: pte,
+      isValid: IsValid(pte, currentPath)
+    };
+    routesCbs.push(item);
+    item.isValid && _utils.default.onShowRe(currentPath, currKeys, item);
+    onAdd();
+  },
+  offRoute: function offRoute(onToggle) {
+    for (var i = routesCbs.length - 1; i >= 0; i--) {
+      if (routesCbs[i].onToggle == onToggle) {
+        routesCbs.splice(i, 1);
+      }
+    }
+  },
+  oneBack: function oneBack(cb) {
+    oneBackCbs.clean();
+    oneBackCbs.on(cb);
+  },
+  offBack: function offBack(cb) {
+    cb ? oneBackCbs.off(cb) : oneBackCbs.clean();
+  },
+  notFoundBind: notFoundBind,
+  replaceState: function replaceState(path) {
+    oneBackCbs.clean();
+
+    if (path != currentPath) {
+      historyApi.replaceState(path);
+    }
+  },
+  pushState: function pushState(path) {
+    oneBackCbs.clean();
+    historyApi.pushState(path);
+  }
 };
-
 historyApi.on(function onPathChanged(location) {
-    if (oneBackCbs.getLength()) {
-        oneBackCbs();
-        oneBackCbs.clean();
-        router && router.pushState(currentPath);
-        return;
+  if (oneBackCbs.getLength()) {
+    oneBackCbs();
+    oneBackCbs.clean();
+    router && router.pushState(currentPath);
+    return;
+  }
+
+  currentPath = '/' + location;
+  onChanged(currentPath);
+
+  _utils.default.fillKeys(currentPath, currKeys);
+
+  routesCbs.forEach(function (item) {
+    item.isValid = IsValid(item.pte, currentPath);
+
+    if (item.isValid) {
+      _utils.default.onShowRe(currentPath, currKeys, item);
+    } else {
+      item.onToggle(false);
     }
-
-    currentPath = '/' + location;
-    onChanged(currentPath);
-    _utils2.default.fillKeys(currentPath, currKeys);
-    routesCbs.forEach(function (item) {
-        item.isValid = item.re.test(currentPath);
-        if (item.isValid) {
-            _utils2.default.onShowRe(currentPath, currKeys, item);
-        } else {
-            item.onHide();
-        }
-    });
-
-    checkNotFound();
+  });
+  checkNotFound();
 });
-
-exports.default = router;
+var _default = router;
+exports.default = _default;

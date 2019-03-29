@@ -1,8 +1,18 @@
 {
-    "presets": [["env"]],
+    "presets": [
+        [
+            "@babel/preset-env"
+        ]
+    ],
     "plugins": [
-        ["transform-react-jsx", { "pragma":"h" }],
-        ["transform-class-properties"],
-        ["transform-object-rest-spread"]
+        [
+            "@babel/plugin-transform-react-jsx",
+            {
+                "pragma": "h"
+            }
+        ],
+        [
+            "@babel/plugin-proposal-class-properties"
+        ]
     ]
 }

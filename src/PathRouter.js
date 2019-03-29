@@ -43,23 +43,21 @@ export default class PathRouter extends Component {
     }
 
     componentDidMount() {
-        this.context.router.onRoute(this.getFullPath(), this.onShow, this.onHide, this);
+        this.context.router.onRoute(this.getFullPath(), this.onToggle, {
+            skipNotFound: this.props.skipNotFound,
+        });
     }
 
     componentWillUnmount() {
-        this.context.router.offRoute(this);
+        this.context.router.offRoute(this.onToggle);
     }
 
-    onShow = () => {
-        this.setState({
-            isShow: true,
-        });
-    };
-
-    onHide = () => {
-        this.setState({
-            isShow: false,
-        });
+    onToggle = (isShow) => {
+        if (this.state.isShow != isShow) {
+            this.setState({
+                isShow,
+            });
+        }
     };
 
     getFullPath() {

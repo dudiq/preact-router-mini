@@ -1,19 +1,21 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.PathRouter = undefined;
+Object.defineProperty(exports, "PathRouter", {
+  enumerable: true,
+  get: function get() {
+    return _PathRouter.default;
+  }
+});
+exports.default = void 0;
 
-var _router = require('./router');
+var _router = _interopRequireDefault(require("./router"));
 
-var _router2 = _interopRequireDefault(_router);
-
-var _PathRouter = require('./PathRouter');
-
-var _PathRouter2 = _interopRequireDefault(_PathRouter);
+var _PathRouter = _interopRequireDefault(require("./PathRouter"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.PathRouter = _PathRouter2.default;
-exports.default = _router2.default;
+var _default = _router.default;
+exports.default = _default;
