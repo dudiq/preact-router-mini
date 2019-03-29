@@ -6,6 +6,10 @@
   "scripts": {
     "build": "babel src -d dist"
   },
+  "files": [
+    "src",
+    "dist"
+  ],
   "dependencies": {
     "jr-callbacks": "^0.0.2",
     "jr-debounce": "^0.0.2",
